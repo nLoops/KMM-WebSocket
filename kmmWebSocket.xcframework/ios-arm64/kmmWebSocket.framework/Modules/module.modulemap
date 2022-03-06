@@ -1,0 +1,6 @@
+framework module kmmWebSocket {
+    umbrella header "kmmWebSocket.h"
+
+    export *
+    module * { export * }
+}
