@@ -14,7 +14,8 @@ internal actual class PlatformSocket actual constructor(
     private val socketRequest = NSMutableURLRequest.requestWithURL(socketEndpoint)
     private val requestHeaders = headers
     private var webSocket: NSURLSessionWebSocketTask? = null
-    private var events:PlatformSocketEvents? = null
+    private var events: PlatformSocketEvents? = null
+    private var retryCount: Int = 3
 
     actual fun init(events: PlatformSocketEvents) {
         this.events = events
@@ -24,11 +25,22 @@ internal actual class PlatformSocket actual constructor(
         val urlSession = NSURLSession.sessionWithConfiguration(
             configuration = NSURLSessionConfiguration.defaultSessionConfiguration(),
             delegate = object : NSObject(), NSURLSessionWebSocketDelegateProtocol {
-                override fun URLSession(session: NSURLSession, webSocketTask: NSURLSessionWebSocketTask, didOpenWithProtocol: String?) {
+                override fun URLSession(
+                    session: NSURLSession,
+                    webSocketTask: NSURLSessionWebSocketTask,
+                    didOpenWithProtocol: String?
+                ) {
                     events?.onOpen()
+                    retryCount = 3
                 }
-                override fun URLSession(session: NSURLSession, webSocketTask: NSURLSessionWebSocketTask, didCloseWithCode: NSURLSessionWebSocketCloseCode, reason: NSData?) {
-                    closeSocket(didCloseWithCode.toInt(),reason?.description ?: "")
+
+                override fun URLSession(
+                    session: NSURLSession,
+                    webSocketTask: NSURLSessionWebSocketTask,
+                    didCloseWithCode: NSURLSessionWebSocketCloseCode,
+                    reason: NSData?
+                ) {
+                    closeSocket(didCloseWithCode.toInt(), reason?.description ?: "")
                 }
             },
             delegateQueue = NSOperationQueue.currentQueue()
@@ -63,7 +75,10 @@ internal actual class PlatformSocket actual constructor(
                     message.string?.let { events?.onMessage(it) }
                 }
             }
-            listenMessages(events)
+            if (retryCount >= 0) {
+                listenMessages(events)
+                retryCount --
+            }
         }
     }
 

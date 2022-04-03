@@ -185,6 +185,7 @@ __attribute__((swift_name("ConnectionState")))
 @property (class, readonly) KWSConnectionState *connecting __attribute__((swift_name("connecting")));
 @property (class, readonly) KWSConnectionState *connected __attribute__((swift_name("connected")));
 @property (class, readonly) KWSConnectionState *closed __attribute__((swift_name("closed")));
+@property (class, readonly) KWSConnectionState *error __attribute__((swift_name("error")));
 + (KWSKotlinArray<KWSConnectionState *> *)values __attribute__((swift_name("values()")));
 @end;
 

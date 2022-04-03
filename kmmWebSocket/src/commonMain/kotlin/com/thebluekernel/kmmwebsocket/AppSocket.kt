@@ -13,18 +13,14 @@ class AppSocket(url: String, headers: Map<String, String>) {
 
     var currentState: ConnectionState = ConnectionState.CLOSED
         private set(value) {
-            if (field != value) {
-                field = value
-                stateListener?.invoke(value)
-            }
+            field = value
+            stateListener?.invoke(value)
         }
 
     var stateListener: ((ConnectionState) -> Unit)? = null
         set(value) {
-            if (field != value) {
-                field = value
-                value?.invoke(currentState)
-            }
+            field = value
+            value?.invoke(currentState)
         }
 
     var messageListener: ((msg: String) -> Unit)? = null
@@ -40,6 +36,7 @@ class AppSocket(url: String, headers: Map<String, String>) {
         override fun onFailure(t: Throwable) {
             socketError = t
             currentState = ConnectionState.CLOSED
+            closingListener?.invoke(999, t.message ?: "Closed with failure")
             println("Connection status is: CLOSED with failure: ${t.message}")
         }
 
@@ -88,5 +85,6 @@ class AppSocket(url: String, headers: Map<String, String>) {
 enum class ConnectionState {
     CONNECTING,
     CONNECTED,
-    CLOSED
+    CLOSED,
+    ERROR
 }

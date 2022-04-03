@@ -36,12 +36,11 @@ internal actual class PlatformSocket actual constructor(
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
-                println("into OkHttp: receive message $text")
                 events?.onMessage(text)
             }
 
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-                // not supported any more
+                events?.onClosed(code, reason)
             }
 
             override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
