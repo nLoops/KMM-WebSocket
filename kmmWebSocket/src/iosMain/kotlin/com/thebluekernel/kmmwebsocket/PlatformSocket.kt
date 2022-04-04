@@ -73,6 +73,7 @@ internal actual class PlatformSocket actual constructor(
 //                }
                 message != null -> {
                     message.string?.let { events?.onMessage(it) }
+                    retryCount = 3
                 }
             }
             if (retryCount >= 0) {
