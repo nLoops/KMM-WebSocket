@@ -182,6 +182,7 @@ __attribute__((swift_name("ConnectionState")))
 + (instancetype)alloc __attribute__((unavailable));
 + (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
 - (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
+@property (class, readonly) KWSConnectionState *ready __attribute__((swift_name("ready")));
 @property (class, readonly) KWSConnectionState *connecting __attribute__((swift_name("connecting")));
 @property (class, readonly) KWSConnectionState *connected __attribute__((swift_name("connected")));
 @property (class, readonly) KWSConnectionState *closed __attribute__((swift_name("closed")));

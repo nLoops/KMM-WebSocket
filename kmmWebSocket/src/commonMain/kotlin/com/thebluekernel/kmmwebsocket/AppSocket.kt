@@ -11,7 +11,7 @@ class AppSocket(url: String, headers: Map<String, String>) {
     var socketError: Throwable? = null
         private set
 
-    var currentState: ConnectionState = ConnectionState.CLOSED
+    var currentState: ConnectionState = ConnectionState.READY
         private set(value) {
             field = value
             stateListener?.invoke(value)
@@ -83,6 +83,7 @@ class AppSocket(url: String, headers: Map<String, String>) {
  * Contains different connection states
  */
 enum class ConnectionState {
+    READY,
     CONNECTING,
     CONNECTED,
     CLOSED,
