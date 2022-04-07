@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name = 'kmmWebSocket'
-  spec.version = '1.0.3'
+  spec.version = '1.0.4'
   spec.homepage = 'https://www.cocoapods.org'
   spec.source = { :git => "Not Published", :tag => "#{spec.version}" }
   spec.authors = 'Ahmed Ibrahim'

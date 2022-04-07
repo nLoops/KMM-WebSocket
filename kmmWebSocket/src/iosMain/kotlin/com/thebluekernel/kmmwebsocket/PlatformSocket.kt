@@ -42,6 +42,15 @@ internal actual class PlatformSocket actual constructor(
                 ) {
                     closeSocket(didCloseWithCode.toInt(), reason?.description ?: "")
                 }
+
+                override fun URLSession(
+                    session: NSURLSession,
+                    task: NSURLSessionTask,
+                    didCompleteWithError: NSError?
+                ) {
+                    println("Connection closed with network error.")
+                    events?.onFailure(Throwable("Closed with error."))
+                }
             },
             delegateQueue = NSOperationQueue.currentQueue()
         )
@@ -78,7 +87,7 @@ internal actual class PlatformSocket actual constructor(
             }
             if (retryCount >= 0) {
                 listenMessages(events)
-                retryCount --
+                retryCount--
             }
         }
     }
