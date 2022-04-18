@@ -30,17 +30,8 @@ internal actual class PlatformSocket actual constructor(
                     webSocketTask: NSURLSessionWebSocketTask,
                     didOpenWithProtocol: String?
                 ) {
-                    events?.onOpen()
                     retryCount = 3
-                }
-
-                override fun URLSession(
-                    session: NSURLSession,
-                    webSocketTask: NSURLSessionWebSocketTask,
-                    didCloseWithCode: NSURLSessionWebSocketCloseCode,
-                    reason: NSData?
-                ) {
-                    closeSocket(didCloseWithCode.toInt(), reason?.description ?: "")
+                    events?.onOpen()
                 }
 
                 override fun URLSession(
@@ -48,7 +39,6 @@ internal actual class PlatformSocket actual constructor(
                     task: NSURLSessionTask,
                     didCompleteWithError: NSError?
                 ) {
-                    println("Connection closed with network error.")
                     events?.onFailure(Throwable("Closed with error."))
                 }
             },

@@ -13,8 +13,10 @@ class AppSocket(url: String, headers: Map<String, String>) {
 
     var currentState: ConnectionState = ConnectionState.READY
         private set(value) {
-            field = value
-            stateListener?.invoke(value)
+            if (field != value) {
+                field = value
+                stateListener?.invoke(value)
+            }
         }
 
     var stateListener: ((ConnectionState) -> Unit)? = null
@@ -30,25 +32,23 @@ class AppSocket(url: String, headers: Map<String, String>) {
     private val socketEvents: PlatformSocketEvents = object : PlatformSocketEvents {
         override fun onOpen() {
             currentState = ConnectionState.CONNECTED
-            println("Connection status is: CONNECTED")
         }
 
         override fun onFailure(t: Throwable) {
-            socketError = t
-            currentState = ConnectionState.CLOSED
-            closingListener?.invoke(999, t.message ?: "Closed with failure")
-            println("Connection status is: CLOSED with failure: ${t.message}")
+            if (currentState != ConnectionState.CLOSED_NORMAL) {
+                socketError = t
+                currentState = ConnectionState.CLOSED
+                closingListener?.invoke(999, t.message ?: "Closed with failure")
+            }
         }
 
         override fun onMessage(msg: String) {
             messageListener?.invoke(msg)
-            println("Received new message over socket.")
         }
 
         override fun onClosed(code: Int, reason: String) {
-            currentState = ConnectionState.CLOSED
+            currentState = ConnectionState.CLOSED_NORMAL
             closingListener?.invoke(code, reason)
-            println("Connection status is: CLOSED with code: $code and reason: $reason")
         }
 
     }
@@ -58,18 +58,12 @@ class AppSocket(url: String, headers: Map<String, String>) {
     }
 
     fun connect() {
-        // close connection first if already active
-        if (currentState != ConnectionState.CLOSED) disconnect()
-        socketError = null
         currentState = ConnectionState.CONNECTING
         ws.openSocket()
     }
 
     fun disconnect() {
-        if (currentState != ConnectionState.CLOSED) {
-            ws.closeSocket(1000, "The user has closed the connection.")
-            currentState = ConnectionState.CLOSED
-        }
+        ws.closeSocket(1000, "The user has closed the connection.")
     }
 
     fun send(msg: String) {
@@ -87,5 +81,5 @@ enum class ConnectionState {
     CONNECTING,
     CONNECTED,
     CLOSED,
-    ERROR
+    CLOSED_NORMAL
 }
